@@ -17,7 +17,7 @@ export default class Visualization extends Component {
     };
 
     this.defaultChunks = [ 10, 20, 30, 50, 10 ];
-    this.defaultSizes = [ 5, 10, 15, 25, 20 ];
+    this.defaultSizes = [ 1, 2, 3, 25, 20 ];
   }
 
   componentDidMount() {
@@ -99,16 +99,16 @@ export default class Visualization extends Component {
 
     if (size && chunk) {
       if (step === 'alloc') {
+        chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
+        chunk.free -= size.size;
+        newChunks[ chunkIdx ] = chunk;
+        return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, step: 'access'};
+      } else {
         if (chunk.free >= size.size) {
-          chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
-          chunk.free -= size.size;
-          newChunks[ chunkIdx ] = chunk;
-          return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, step: 'access'};
+          return {...state, chunks: newChunks, step: 'alloc'}
         } else {
           return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, step: 'access'};
         }
-      } else {
-        return {...state, chunks: newChunks, step: 'alloc'}
       }
     } else {
       return {...state, chunks: newChunks}
