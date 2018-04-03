@@ -11,6 +11,19 @@ export default class Visualization extends Component {
       chunks: [],
       sizes: [],
     };
+
+    this.defaultChunks = [ 10, 20, 30, 50, 10 ];
+    this.defaultSizes = [ 5, 10, 15, 25, 20 ];
+  }
+
+  componentDidMount() {
+    this.init(this.defaultChunks, this.defaultSizes);
+  }
+
+  init(chunks, sizes) {
+    const chunkStructure = this.setChunks(chunks);
+    const sizesStructure = this.setSizes(sizes);
+    this.initAlgorithms(chunkStructure, sizesStructure);
   }
 
   setChunks(rawChunks) {
@@ -21,7 +34,8 @@ export default class Visualization extends Component {
         accessing: false,
       }
     });
-    this.setState({ chunks });
+    this.setState({ chunks: rawChunks });
+    return chunks;
   }
 
   setSizes(rawSizes) {
@@ -32,20 +46,38 @@ export default class Visualization extends Component {
         allocated: false,
       }
     });
-    this.setState({ sizes });
+    this.setState({ sizes: rawSizes });
+    return sizes;
   }
 
+  initAlgorithms(chunks, sizes) {
+    const structure = { chunks, sizes };
+    this.setState({
+      firstFit: {...structure},
+      bestFit: {...structure},
+      worstFit: {...structure},
+      buddysSystem: {...structure},
+      nextFit: {...structure},
+    })
+  }
+
+
+
   render() {
-    const { chunks, sizes } = this.state;
+    const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
 
     return (
       <div>
-        <ParameterInputs setChunks={this.setChunks} setSizes={this.setSizes}/>
-        <Algorithm chunks={chunks} sizes={sizes} name="First fit"/>
-        <Algorithm chunks={chunks} sizes={sizes} name="Best fit"/>
-        <Algorithm chunks={chunks} sizes={sizes} name="Worst fit"/>
-        <Algorithm chunks={chunks} sizes={sizes} name="Buddy's System"/>
-        <Algorithm chunks={chunks} sizes={sizes} name="Next fit"/>
+        <ParameterInputs
+          defaultChunks={this.defaultChunks}
+          defaultSizes={this.defaultSizes}
+          setChunks={this.setChunks}
+          setSizes={this.setSizes}/>
+        <Algorithm data={firstFit} name="First fit"/>
+        <Algorithm data={bestFit} name="Best fit"/>
+        <Algorithm data={worstFit} name="Worst fit"/>
+        <Algorithm data={buddysSystem} name="Buddy's System"/>
+        <Algorithm data={nextFit} name="Next fit"/>
       </div>
     )
   }
