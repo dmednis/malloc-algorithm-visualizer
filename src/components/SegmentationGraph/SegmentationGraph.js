@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis} from "recharts";
+import {CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis} from "recharts";
 
 export default class SegmentationGraph extends Component {
 
@@ -92,7 +92,7 @@ export default class SegmentationGraph extends Component {
     return (
       <div style={{width: '100%', height: '100%'}}>
         <p>GRAPH</p>
-        <LineChart width={400} height={150} data={fakeData}
+        <LineChart width={500} height={250} data={fakeData}
                    margin={{top: 5, right: 30, left: 20, bottom: 15}}>
           <XAxis dataKey="time"/>
           <YAxis/>

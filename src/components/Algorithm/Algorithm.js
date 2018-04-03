@@ -19,9 +19,9 @@ export default function Algorithm({name, data}) {
   return (
         <header style={style}>
           <Row style={{width: '100%'}}>
-            <Col>
+            <Col style={{alignContent: 'center'}}>
             <Row>
-              <h2 style={{marginLeft: '20px'}}>{name}</h2>
+              <h2 style={{marginTop: '20px', marginLeft: '30px'}}>{name}</h2>
             </Row>
             <MemoryIndicator chunks={chunks} />
             </Col>

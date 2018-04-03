@@ -4,37 +4,40 @@ export default class MemoryIndicator extends Component {
 
 
   render() {
+    const blockHeight = '30px';
+    const blockWidth = '8px';
     const styles = {
       bigMemStyle: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
         border: '1px solid grey',
-        maxWidth: '260px',
-        marginLeft: '20px',
+        maxWidth: '345px',
+        marginTop: '50px',
+        marginLeft: '100px',
       },
       memBlockStyle: {
         free:{
-          height: '20px',
-          width: '5px',
+          height: blockHeight,
+          width: blockWidth,
           border: '0.1px solid black',
           backgroundColor: 'white',
         },
         used:{
-          height: '20px',
-          width: '5px',
+          height: blockHeight,
+          width: blockWidth,
           border: '0.1px solid black',
           backgroundColor: 'green',
         },
         accessing: {
-          height: '20px',
-          width: '5px',
+          height: blockHeight,
+          width: blockWidth,
           border: '0.1px solid black',
           backgroundColor: 'yellow',
         },
         borderBlock:{
-          height: '20px',
-          width: '5px',
+          height: blockHeight,
+          width: blockWidth,
           border: '0.1px solid black',
           backgroundColor: 'grey',
         },
