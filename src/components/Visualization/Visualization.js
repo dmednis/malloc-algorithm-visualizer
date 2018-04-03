@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ParameterInputs from "../ParameterInputs";
 import Algorithm from "../Algorithm";
+import { Button } from "reactstrap";
 
 export default class Visualization extends Component {
 
@@ -30,6 +31,7 @@ export default class Visualization extends Component {
     const chunks = rawChunks.map((chunk) => {
       return {
         size: chunk,
+        free: chunk,
         memory: new Array(chunk).fill(0),
         accessing: false,
       }
@@ -53,15 +55,62 @@ export default class Visualization extends Component {
   initAlgorithms(chunks, sizes) {
     const structure = { chunks, sizes };
     this.setState({
-      firstFit: {...structure},
-      bestFit: {...structure},
-      worstFit: {...structure},
-      buddysSystem: {...structure},
-      nextFit: {...structure},
+      firstFit: { ...structure },
+      bestFit: { ...structure },
+      worstFit: { ...structure },
+      buddysSystem: { ...structure },
+      nextFit: { ...structure },
     })
   }
 
+  doAlgorithmStep() {
+    const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
 
+    console.log("BEFORE", firstFit);
+    const newFirstFit = this.nextFirstFitStep(firstFit);
+    console.log("AFTER", newFirstFit);
+
+    this.setState({
+      firstFit: newFirstFit
+    });
+  }
+
+  fillMemory(memory, content, size) {
+    const start = memory.indexOf(0);
+    return memory.fill(content, start, start + size);
+  }
+
+  nextFirstFitStep(state) {
+    const { chunks, sizes, chunkIdx = 0, sizeIdx = 0, step = 'access' } = state;
+
+    const size = sizes[ sizeIdx ];
+    const chunk = chunks[ chunkIdx ];
+
+    const newChunks = chunks.map((c, idx) => {
+      if (chunkIdx === idx) {
+        return { ...c, accessing: true }
+      } else {
+        return { ...c, accessing: false }
+      }
+    });
+
+    if (size && chunk) {
+      if (step === 'alloc') {
+        if (chunk.free >= size.size) {
+          chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
+          chunk.free -= size.size;
+          newChunks[ chunkIdx ] = chunk;
+          return { ...state, chunkIdx: chunkIdx + 1, sizeIdx: sizeIdx + 1, chunks: newChunks};
+        } else {
+          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks};
+        }
+      } else {
+        return {...state, chunks: newChunks, step: 'alloc'}
+      }
+    } else {
+      return {...state, chunks: newChunks}
+    }
+  }
 
   render() {
     const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
@@ -73,6 +122,7 @@ export default class Visualization extends Component {
           defaultSizes={this.defaultSizes}
           setChunks={this.setChunks}
           setSizes={this.setSizes}/>
+        <Button onClick={() => {this.doAlgorithmStep()}}>DO STEP</Button>
         <Algorithm data={firstFit} name="First fit"/>
         <Algorithm data={bestFit} name="Best fit"/>
         <Algorithm data={worstFit} name="Worst fit"/>
