@@ -10,7 +10,7 @@ export default class MemoryIndicator extends Component {
         flexDirection: 'row',
         flexWrap: 'wrap',
         border: '1px solid grey',
-        maxWidth: '220px',
+        maxWidth: '260px',
         marginLeft: '20px',
       },
       memBlockStyle: {

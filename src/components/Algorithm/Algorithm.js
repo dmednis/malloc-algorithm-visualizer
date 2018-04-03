@@ -11,10 +11,9 @@ export default function Algorithm({name, data}) {
       display: 'flex'
   };
 
-  let chunks, sizes;
+  let chunks;
   if (data) {
     chunks = data.chunks;
-    sizes = data.sizes;
   }
 
   return (
@@ -27,7 +26,7 @@ export default function Algorithm({name, data}) {
             <MemoryIndicator chunks={chunks} />
             </Col>
             <Col>
-            <SegmentationGraph />
+            <SegmentationGraph chunks={chunks}/>
             </Col>
           </Row>
         </header>
