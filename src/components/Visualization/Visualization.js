@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import { Button } from "reactstrap";
+import * as _ from 'lodash';
+
 import ParameterInputs from "../ParameterInputs";
 import Algorithm from "../Algorithm";
-import { Button } from "reactstrap";
+
 
 export default class Visualization extends Component {
 
@@ -55,11 +58,11 @@ export default class Visualization extends Component {
   initAlgorithms(chunks, sizes) {
     const structure = { chunks, sizes };
     this.setState({
-      firstFit: { ...structure },
-      bestFit: { ...structure },
-      worstFit: { ...structure },
-      buddysSystem: { ...structure },
-      nextFit: { ...structure },
+      firstFit: _.cloneDeep(structure),
+      bestFit: _.cloneDeep(structure),
+      worstFit: _.cloneDeep(structure),
+      buddysSystem: _.cloneDeep(structure),
+      nextFit: _.cloneDeep(structure),
     })
   }
 
@@ -100,9 +103,9 @@ export default class Visualization extends Component {
           chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
           chunk.free -= size.size;
           newChunks[ chunkIdx ] = chunk;
-          return { ...state, chunkIdx: chunkIdx + 1, sizeIdx: sizeIdx + 1, chunks: newChunks};
+          return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, step: 'access'};
         } else {
-          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks};
+          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, step: 'access'};
         }
       } else {
         return {...state, chunks: newChunks, step: 'alloc'}
