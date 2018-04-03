@@ -1,20 +1,35 @@
 import React from 'react';
 import MemoryIndicator from "../MemoryIndicator";
 import SegmentationGraph from "../SegmentationGraph";
+import {Col, Row} from "reactstrap";
 
-export default function Algorithm({name}) {
+export default function Algorithm({name, data}) {
 
-    const style = {
-        padding: 5,
-        borderBottom: '1px solid black',
-        display: 'flex'
-    };
+  const style = {
+      padding: 5,
+      borderBottom: '1px solid black',
+      display: 'flex'
+  };
 
-    return (
+  let chunks, sizes;
+  if (data) {
+    chunks = data.chunks;
+    sizes = data.sizes;
+  }
+
+  return (
         <header style={style}>
-            <h2>{name}</h2>
-            <MemoryIndicator />
-            <SegmentationGraph/>
+          <Row style={{width: '100%'}}>
+            <Col>
+            <Row>
+              <h2 style={{marginLeft: '20px'}}>{name}</h2>
+            </Row>
+            <MemoryIndicator chunks={chunks} />
+            </Col>
+            <Col>
+            <SegmentationGraph />
+            </Col>
+          </Row>
         </header>
     )
 }

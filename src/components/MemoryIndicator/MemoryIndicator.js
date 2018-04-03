@@ -11,6 +11,7 @@ export default class MemoryIndicator extends Component {
         flexWrap: 'wrap',
         border: '1px solid grey',
         maxWidth: '220px',
+        marginLeft: '20px',
       },
       memBlockStyle: {
         free:{
@@ -40,34 +41,6 @@ export default class MemoryIndicator extends Component {
       }
     };
 
-    const chunks = [
-      {
-        size: 10,
-        memory: [0,0,0,0,0,0,0,0,0,0],
-        accessing: false,
-      },
-      {
-        size: 20,
-        memory: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        accessing: true,
-      },
-      {
-        size: 15,
-        memory: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        accessing: false,
-      },
-      {
-        size: 25,
-        memory: [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        accessing: true,
-      },
-      {
-        size: 10,
-        memory: [0,0,0,0,0,1,1,1,0,0],
-        accessing: false,
-      },
-    ];
-    
     // little mem block
     function MemoryBlock(props) {
       let blockStyle;
@@ -95,26 +68,27 @@ export default class MemoryIndicator extends Component {
       return <div style={blockStyle}></div>
     }
 
-    // const { chunks } = this.props;
-
+    const { chunks } = this.props;
     let memoryBlocks = [];
 
-    chunks.forEach((chunk) =>{
-      if (!chunk.accessing){
-        chunk.memory.forEach((mem)=>{
-          if(mem > 0){
-            memoryBlocks.push(<MemoryBlock status='used'/>)
-          } else {
-            memoryBlocks.push(<MemoryBlock status='free'/>)
-          }
-        })
-      } else {
-        chunk.memory.forEach(()=>{
-          memoryBlocks.push(<MemoryBlock status='accessing'/>)
-        });
-      }
-      memoryBlocks.push(<MemoryBlock status='borderBlock'/>)
-    });
+    if(chunks){
+      chunks.forEach((chunk) =>{
+        if (!chunk.accessing){
+          chunk.memory.forEach((mem)=>{
+            if(mem > 0){
+              memoryBlocks.push(<MemoryBlock status='used'/>)
+            } else {
+              memoryBlocks.push(<MemoryBlock status='free'/>)
+            }
+          })
+        } else {
+          chunk.memory.forEach(()=>{
+            memoryBlocks.push(<MemoryBlock status='accessing'/>)
+          });
+        }
+        memoryBlocks.push(<MemoryBlock status='borderBlock'/>)
+      });
+    }
 
 
     return (
