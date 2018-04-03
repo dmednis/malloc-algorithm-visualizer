@@ -13,7 +13,7 @@ export default function Algorithm({name}) {
     return (
         <header style={style}>
             <h2>{name}</h2>
-            <MemoryIndicator/>
+            <MemoryIndicator />
             <SegmentationGraph/>
         </header>
     )
