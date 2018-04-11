@@ -30,7 +30,13 @@ export default class Visualization extends Component {
     this.initAlgorithms(chunkStructure, sizesStructure);
   }
 
-  setChunks(rawChunks) {
+  reset() {
+    this.init(this.defaultChunks, this.defaultSizes);
+    this.setState({ reset: true });
+  }
+
+  setChunks = (rawChunks) => {
+    const { sizes } = this.state;
     const chunks = rawChunks.map((chunk) => {
       return {
         size: chunk,
@@ -39,11 +45,13 @@ export default class Visualization extends Component {
         accessing: false,
       }
     });
-    this.setState({ chunks: rawChunks });
+    this.setState({ chunks, reset: false });
+    this.initAlgorithms(chunks, sizes);
     return chunks;
-  }
+  };
 
-  setSizes(rawSizes) {
+  setSizes = (rawSizes) => {
+    const { chunks } = this.state;
     const sizes = rawSizes.map((size, idx) => {
       return {
         id: idx + 1,
@@ -51,9 +59,10 @@ export default class Visualization extends Component {
         allocated: false,
       }
     });
-    this.setState({ sizes: rawSizes });
+    this.setState({ sizes, reset: false });
+    this.initAlgorithms(chunks, sizes);
     return sizes;
-  }
+  };
 
   initAlgorithms(chunks, sizes) {
     const structure = { chunks, sizes };
@@ -116,7 +125,7 @@ export default class Visualization extends Component {
   }
 
   render() {
-    const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
+    const { firstFit, bestFit, worstFit, buddysSystem, nextFit, reset } = this.state;
 
     return (
       <div>
@@ -124,8 +133,17 @@ export default class Visualization extends Component {
           defaultChunks={this.defaultChunks}
           defaultSizes={this.defaultSizes}
           setChunks={this.setChunks}
-          setSizes={this.setSizes}/>
-        <Button onClick={() => {this.doAlgorithmStep()}}>DO STEP</Button>
+          setSizes={this.setSizes}
+          reset={reset}
+        />
+        <Button
+          onClick={() => {this.doAlgorithmStep()}}
+          style={{ marginLeft: '20px' }}
+        >DO STEP</Button>
+        <Button
+          onClick={() => {this.reset()}}
+          style={{ marginLeft: '20px' }}
+        >RESET</Button>
         <Algorithm data={firstFit} name="First fit"/>
         <Algorithm data={bestFit} name="Best fit"/>
         <Algorithm data={worstFit} name="Worst fit"/>

@@ -4,20 +4,33 @@ import 'react-tagsinput/react-tagsinput.css'
 import './ParameterInput.css';
 
 export default class ParameterInputs extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
-      chunks: [],
-      sizes: [],
+      chunks: props.defaultChunks || [],
+      sizes: props.defaultSizes || [],
+    }
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.reset) {
+      this.setState({
+        chunks: newProps.defaultChunks,
+        sizes: newProps.defaultSizes,
+      })
     }
   }
 
   addChunks = (chunks) => {
-    this.setState({chunks})
+    const intChunks = chunks.map(c => Number(c));
+    this.setState({chunks: intChunks});
+    this.props.setChunks(intChunks);
   };
 
   addSizes = (sizes) => {
-    this.setState({sizes})
+    const intSizes = sizes.map(s => Number(s));
+    this.setState({ sizes: intSizes });
+    this.props.setSizes(intSizes);
   };
 
   render() {
