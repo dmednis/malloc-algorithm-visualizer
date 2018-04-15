@@ -21,16 +21,16 @@ export default function Algorithm({ name, data }) {
 
   return (
     <div style={style}>
-      <Row>
+      <Row style={{width: '100%'}}>
         <Col>
           <h2 style={{ marginTop: '20px', marginLeft: '30px' }}>{name}</h2>
         </Col>
       </Row>
-      <Row>
-        <Col style={{ alignContent: 'center', width: '50%' }}>
+      <Row style={{width: '100%'}}>
+        <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%' }}>
           <MemoryIndicator chunks={chunks}/>
         </Col>
-        <Col style={{ width: '50%' }}>
+        <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%' }}>
           <SegmentationGraph chunks={chunks}/>
         </Col>
       </Row>
