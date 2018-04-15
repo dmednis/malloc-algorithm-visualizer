@@ -6,12 +6,12 @@ import { Col, Row } from "reactstrap";
 export default function Algorithm({ name, data }) {
 
   const style = {
-    width: '50%',
     padding: 5,
     borderBottom: '1px solid black',
     display: 'flex',
     flexWrap: 'wrap',
-    borderRight: '1px solid black'
+    flex: '1 1 50%',
+    borderRight: '1px solid black',
   };
 
   let chunks;
@@ -27,10 +27,10 @@ export default function Algorithm({ name, data }) {
         </Col>
       </Row>
       <Row style={{width: '100%'}}>
-        <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%' }}>
+        <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%', minWidth: 360 }}>
           <MemoryIndicator chunks={chunks}/>
         </Col>
-        <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%' }}>
+        <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%', minWidth: 400 }}>
           <SegmentationGraph chunks={chunks}/>
         </Col>
       </Row>

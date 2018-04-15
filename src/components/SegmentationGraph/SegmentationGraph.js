@@ -90,7 +90,7 @@ export default class SegmentationGraph extends Component {
       },
     ];
     return (
-      <div style={{width: '100%', height: '100%'}}>
+      <div style={{ height: '100%'}}>
         <p>GRAPH</p>
         <LineChart width={400} height={250} data={fakeData}>
           <XAxis dataKey="time"/>
