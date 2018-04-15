@@ -76,19 +76,20 @@ export default class Visualization extends Component {
   }
 
   doAlgorithmStep() {
-    const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
+    const { firstFit, bestFit, worstFit, nextFit } = this.state;
 
     const newFirstFit = this.nextFirstFitStep(firstFit);
     const newBestFit = this.nextBestFitStep(bestFit);
-
-    console.log("BEFORE", bestFit);
     const newWorstFit = this.nextWorstFitStep(worstFit);
-    console.log("AFTER", newBestFit);
+
+    const newNextFit = this.nextNextFitStep(nextFit);
+
 
     this.setState({
       firstFit: newFirstFit,
       bestFit: newBestFit,
-      worstFit: newWorstFit
+      worstFit: newWorstFit,
+      nextFit: newNextFit
     });
   }
 
@@ -98,7 +99,7 @@ export default class Visualization extends Component {
   }
 
   nextFirstFitStep(state) {
-    const { chunks, sizes, chunkIdx = 0, sizeIdx = 0, step = 'access' } = state;
+    const { chunks, sizes, error, chunkIdx = 0, sizeIdx = 0, step = 'access' } = state;
 
     const size = sizes[ sizeIdx ];
     const chunk = chunks[ chunkIdx ];
@@ -124,13 +125,17 @@ export default class Visualization extends Component {
           return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, step: 'access' };
         }
       }
+    } else if (!chunk && size) {
+      return { ...state, chunks: newChunks, error: true, sizeIdx: -1, chunkIdx: -1 }
+    } else if (error) {
+      return { ...state, chunks: newChunks }
     } else {
-      return { ...state, chunks: newChunks, done: true }
+      return { ...state, chunks: newChunks, done: true, sizeIdx: -1, chunkIdx: -1 }
     }
   }
 
   nextBestFitStep(state) {
-    const { chunks, sizes, chunkIdx = 0, sizeIdx = 0, step = 'access', bestFit } = state;
+    const { chunks, sizes, error, chunkIdx = 0, sizeIdx = 0, step = 'access', bestFit } = state;
 
     const size = sizes[ sizeIdx ];
     const chunk = chunks[ chunkIdx ];
@@ -159,13 +164,17 @@ export default class Visualization extends Component {
       chunk.free -= size.size;
       newChunks[ chunkIdx ] = chunk;
       return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, bestFit: null };
+    } else if (!chunk && size) {
+      return { ...state, chunks: newChunks, error: true, sizeIdx: -1, chunkIdx: -1 }
+    } else if (error) {
+      return { ...state, chunks: newChunks }
     } else {
-      return { ...state, chunks: newChunks, done: true }
+      return { ...state, chunks: newChunks, done: true, sizeIdx: -1, chunkIdx: -1 }
     }
   }
 
   nextWorstFitStep(state) {
-    const { chunks, sizes, chunkIdx = 0, sizeIdx = 0, step = 'access', worstFit } = state;
+    const { chunks, sizes, error, chunkIdx = 0, sizeIdx = 0, step = 'access', worstFit } = state;
 
     const size = sizes[ sizeIdx ];
     const chunk = chunks[ chunkIdx ];
@@ -194,17 +203,66 @@ export default class Visualization extends Component {
       chunk.free -= size.size;
       newChunks[ chunkIdx ] = chunk;
       return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, worstFit: null };
+    } else if (!chunk && size) {
+      return { ...state, chunks: newChunks, error: true, sizeIdx: -1, chunkIdx: -1 }
+    } else if (error) {
+      return { ...state, chunks: newChunks }
     } else {
-      return { ...state, chunks: newChunks, done: true }
+      return { ...state, chunks: newChunks, done: true, sizeIdx: -1, chunkIdx: -1 }
     }
   }
 
   nextNextFitStep(state) {
+    const { chunks, sizes, error, chunkIdx = 0, sizeIdx = 0, step = 'access', lastAlloc } = state;
 
+    const size = sizes[ sizeIdx ];
+    const chunk = chunks[ chunkIdx ];
+
+    const newChunks = chunks.map((c, idx) => {
+      if (chunkIdx === idx) {
+        return { ...c, accessing: true }
+      } else {
+        return { ...c, accessing: false }
+      }
+    });
+
+    if (size && chunk) {
+      if (lastAlloc && lastAlloc.loop && lastAlloc.idx === chunkIdx) {
+        return { ...state, error: true, sizeIdx: -1, chunkIdx: -1 }
+      }
+      if (step === 'alloc') {
+        chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
+        chunk.free -= size.size;
+        newChunks[ chunkIdx ] = chunk;
+        return {
+          ...state,
+          sizeIdx: sizeIdx + 1,
+          chunks: newChunks,
+          step: 'access',
+          lastAlloc: { idx: chunkIdx, loop: false }
+        };
+      } else {
+        if (chunk.free >= size.size) {
+          return { ...state, chunks: newChunks, step: 'alloc' }
+        } else {
+          return {
+            ...state,
+            chunkIdx: chunks[ chunkIdx + 1 ] ? chunkIdx + 1 : 0,
+            lastAlloc: chunks[ chunkIdx + 1 ] ? {...lastAlloc} : {...lastAlloc, loop: true},
+            chunks: newChunks,
+            step: 'access'
+          };
+        }
+      }
+    } else if (error) {
+      return { ...state, chunks: newChunks }
+    } else {
+      return { ...state, chunks: newChunks, done: true, sizeIdx: -1, chunkIdx: -1 }
+    }
   }
 
   render() {
-    const { firstFit, bestFit, worstFit, buddysSystem, nextFit, reset } = this.state;
+    const { firstFit, bestFit, worstFit, nextFit, reset } = this.state;
 
     return (
       <div>
@@ -216,14 +274,18 @@ export default class Visualization extends Component {
           reset={reset}
         />
         <Button
-          onClick={() => {this.doAlgorithmStep()}}
+          onClick={() => {
+            this.doAlgorithmStep()
+          }}
           style={{ marginLeft: '20px' }}
         >DO STEP</Button>
         <Button
-          onClick={() => {this.reset()}}
+          onClick={() => {
+            this.reset()
+          }}
           style={{ marginLeft: '20px' }}
         >RESET</Button>
-        <div style={{display: 'flex', flexWrap: 'wrap'}}>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <Algorithm data={firstFit} name="First fit"/>
           <Algorithm data={bestFit} name="Best fit"/>
           <Algorithm data={worstFit} name="Worst fit"/>

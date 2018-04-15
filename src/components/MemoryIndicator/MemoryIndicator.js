@@ -8,10 +8,8 @@ export default class MemoryIndicator extends Component {
       display: 'flex',
       flexDirection: 'row',
       flexWrap: 'wrap',
-      border: '1px solid grey',
-      maxWidth: 345,
+      margin: 15,
       marginTop: 30,
-      marginBottom: 15,
     };
 
     function bitStyle() {
