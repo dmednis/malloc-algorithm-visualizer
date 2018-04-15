@@ -12,7 +12,6 @@ export default class MemoryIndicator extends Component {
       maxWidth: 345,
       marginTop: 30,
       marginBottom: 15,
-      marginLeft: 100,
     };
 
     function bitStyle() {

@@ -116,16 +116,16 @@ export default class Visualization extends Component {
         chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
         chunk.free -= size.size;
         newChunks[ chunkIdx ] = chunk;
-        return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, step: 'access'};
+        return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, step: 'access' };
       } else {
         if (chunk.free >= size.size) {
-          return {...state, chunks: newChunks, step: 'alloc'}
+          return { ...state, chunks: newChunks, step: 'alloc' }
         } else {
-          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, step: 'access'};
+          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, step: 'access' };
         }
       }
     } else {
-      return {...state, chunks: newChunks, done: true}
+      return { ...state, chunks: newChunks, done: true }
     }
   }
 
@@ -146,11 +146,11 @@ export default class Visualization extends Component {
     if (size && chunk) {
       if (chunk.free >= size.size) {
         if (!bestFit || (bestFit && bestFit.size >= chunk.free)) {
-          return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks, bestFit: {idx: chunkIdx, size: chunk.free}}
+          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, bestFit: { idx: chunkIdx, size: chunk.free } }
         }
-        return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks}
+        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks }
       } else {
-        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks};
+        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks };
       }
     } else if (!chunk && bestFit && size) {
       const chunkIdx = bestFit.idx;
@@ -158,9 +158,9 @@ export default class Visualization extends Component {
       chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
       chunk.free -= size.size;
       newChunks[ chunkIdx ] = chunk;
-      return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, bestFit: null};
+      return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, bestFit: null };
     } else {
-      return {...state, chunks: newChunks, done: true}
+      return { ...state, chunks: newChunks, done: true }
     }
   }
 
@@ -181,11 +181,11 @@ export default class Visualization extends Component {
     if (size && chunk) {
       if (chunk.free >= size.size) {
         if (!worstFit || (worstFit && worstFit.size <= chunk.free)) {
-          return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks, worstFit: {idx: chunkIdx, size: chunk.free}}
+          return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks, worstFit: { idx: chunkIdx, size: chunk.free } }
         }
-        return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks}
+        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks }
       } else {
-        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks};
+        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks };
       }
     } else if (!chunk && worstFit && size) {
       const chunkIdx = worstFit.idx;
@@ -193,9 +193,9 @@ export default class Visualization extends Component {
       chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
       chunk.free -= size.size;
       newChunks[ chunkIdx ] = chunk;
-      return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, worstFit: null};
+      return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, worstFit: null };
     } else {
-      return {...state, chunks: newChunks, done: true}
+      return { ...state, chunks: newChunks, done: true }
     }
   }
 
@@ -219,11 +219,12 @@ export default class Visualization extends Component {
           onClick={() => {this.reset()}}
           style={{ marginLeft: '20px' }}
         >RESET</Button>
-        <Algorithm data={firstFit} name="First fit"/>
-        <Algorithm data={bestFit} name="Best fit"/>
-        <Algorithm data={worstFit} name="Worst fit"/>
-        <Algorithm data={buddysSystem} name="Buddy's System"/>
-        <Algorithm data={nextFit} name="Next fit"/>
+        <div style={{display: 'flex', flexWrap: 'wrap'}}>
+          <Algorithm data={firstFit} name="First fit"/>
+          <Algorithm data={bestFit} name="Best fit"/>
+          <Algorithm data={worstFit} name="Worst fit"/>
+          <Algorithm data={nextFit} name="Next fit"/>
+        </div>
       </div>
     )
   }

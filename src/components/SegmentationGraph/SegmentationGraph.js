@@ -92,8 +92,7 @@ export default class SegmentationGraph extends Component {
     return (
       <div style={{width: '100%', height: '100%'}}>
         <p>GRAPH</p>
-        <LineChart width={500} height={250} data={fakeData}
-                   margin={{top: 5, right: 30, left: 20, bottom: 15}}>
+        <LineChart width={400} height={250} data={fakeData}>
           <XAxis dataKey="time"/>
           <YAxis/>
           <CartesianGrid strokeDasharray="3 3"/>
