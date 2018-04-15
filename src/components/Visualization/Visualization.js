@@ -79,14 +79,16 @@ export default class Visualization extends Component {
     const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
 
     const newFirstFit = this.nextFirstFitStep(firstFit);
+    const newBestFit = this.nextBestFitStep(bestFit);
 
     console.log("BEFORE", bestFit);
-    const newBestFit = this.nextBestFitStep(bestFit);
+    const newWorstFit = this.nextWorstFitStep(worstFit);
     console.log("AFTER", newBestFit);
 
     this.setState({
       firstFit: newFirstFit,
-      bestFit: newBestFit
+      bestFit: newBestFit,
+      worstFit: newWorstFit
     });
   }
 
@@ -157,6 +159,41 @@ export default class Visualization extends Component {
       chunk.free -= size.size;
       newChunks[ chunkIdx ] = chunk;
       return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, bestFit: null};
+    } else {
+      return {...state, chunks: newChunks, done: true}
+    }
+  }
+
+  nextWorstFitStep(state) {
+    const { chunks, sizes, chunkIdx = 0, sizeIdx = 0, step = 'access', worstFit } = state;
+
+    const size = sizes[ sizeIdx ];
+    const chunk = chunks[ chunkIdx ];
+
+    const newChunks = chunks.map((c, idx) => {
+      if (chunkIdx === idx) {
+        return { ...c, accessing: true }
+      } else {
+        return { ...c, accessing: false }
+      }
+    });
+
+    if (size && chunk) {
+      if (chunk.free >= size.size) {
+        if (!worstFit || (worstFit && worstFit.size <= chunk.free)) {
+          return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks, worstFit: {idx: chunkIdx, size: chunk.free}}
+        }
+        return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks}
+      } else {
+        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks};
+      }
+    } else if (!chunk && worstFit && size) {
+      const chunkIdx = worstFit.idx;
+      const chunk = chunks[ chunkIdx ];
+      chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
+      chunk.free -= size.size;
+      newChunks[ chunkIdx ] = chunk;
+      return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, worstFit: null};
     } else {
       return {...state, chunks: newChunks, done: true}
     }
