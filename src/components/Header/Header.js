@@ -10,7 +10,7 @@ export default function Header() {
 
     return (
         <header style={headerStyle}>
-           <h1>Malloc Algoritm Visualizer</h1>
+           <h1>Malloc Algorithm Visualizer</h1>
         </header>
     )
 }

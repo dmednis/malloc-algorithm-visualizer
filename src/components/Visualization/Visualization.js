@@ -200,7 +200,7 @@ export default class Visualization extends Component {
   }
 
   nextNextFitStep(state) {
-    
+
   }
 
   render() {
