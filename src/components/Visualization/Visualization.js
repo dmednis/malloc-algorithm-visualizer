@@ -78,12 +78,15 @@ export default class Visualization extends Component {
   doAlgorithmStep() {
     const { firstFit, bestFit, worstFit, buddysSystem, nextFit } = this.state;
 
-    console.log("BEFORE", firstFit);
     const newFirstFit = this.nextFirstFitStep(firstFit);
-    console.log("AFTER", newFirstFit);
+
+    console.log("BEFORE", bestFit);
+    const newBestFit = this.nextBestFitStep(bestFit);
+    console.log("AFTER", newBestFit);
 
     this.setState({
-      firstFit: newFirstFit
+      firstFit: newFirstFit,
+      bestFit: newBestFit
     });
   }
 
@@ -120,7 +123,42 @@ export default class Visualization extends Component {
         }
       }
     } else {
-      return {...state, chunks: newChunks}
+      return {...state, chunks: newChunks, done: true}
+    }
+  }
+
+  nextBestFitStep(state) {
+    const { chunks, sizes, chunkIdx = 0, sizeIdx = 0, step = 'access', bestFit } = state;
+
+    const size = sizes[ sizeIdx ];
+    const chunk = chunks[ chunkIdx ];
+
+    const newChunks = chunks.map((c, idx) => {
+      if (chunkIdx === idx) {
+        return { ...c, accessing: true }
+      } else {
+        return { ...c, accessing: false }
+      }
+    });
+
+    if (size && chunk) {
+      if (chunk.free >= size.size) {
+        if (!bestFit || (bestFit && bestFit.size >= chunk.free)) {
+          return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks, bestFit: {idx: chunkIdx, size: chunk.free}}
+        }
+        return {...state, chunkIdx: chunkIdx + 1, chunks: newChunks}
+      } else {
+        return { ...state, chunkIdx: chunkIdx + 1, chunks: newChunks};
+      }
+    } else if (!chunk && bestFit && size) {
+      const chunkIdx = bestFit.idx;
+      const chunk = chunks[ chunkIdx ];
+      chunk.memory = this.fillMemory(chunk.memory, size.id, size.size);
+      chunk.free -= size.size;
+      newChunks[ chunkIdx ] = chunk;
+      return { ...state, chunkIdx: 0, sizeIdx: sizeIdx + 1, chunks: newChunks, bestFit: null};
+    } else {
+      return {...state, chunks: newChunks, done: true}
     }
   }
 
