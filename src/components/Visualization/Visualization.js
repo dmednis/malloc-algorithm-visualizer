@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Button } from "reactstrap";
 import * as _ from 'lodash';
 
 import ParameterInputs from "../ParameterInputs";
@@ -30,12 +29,7 @@ export default class Visualization extends Component {
     this.initAlgorithms(chunkStructure, sizesStructure);
   }
 
-  reset() {
-    this.init(this.defaultChunks, this.defaultSizes);
-    this.setState({ reset: true });
-  }
-
-  setChunks = (rawChunks) => {
+  setChunks(rawChunks) {
     const { sizes } = this.state;
     const chunks = rawChunks.map((chunk) => {
       return {
@@ -45,12 +39,13 @@ export default class Visualization extends Component {
         accessing: false,
       }
     });
-    this.setState({ chunks, reset: false });
+    console.log(rawChunks);
+    this.setState({ chunks, rawChunks });
     this.initAlgorithms(chunks, sizes);
     return chunks;
-  };
+  }
 
-  setSizes = (rawSizes) => {
+  setSizes(rawSizes) {
     const { chunks } = this.state;
     const sizes = rawSizes.map((size, idx) => {
       return {
@@ -59,20 +54,54 @@ export default class Visualization extends Component {
         allocated: false,
       }
     });
-    this.setState({ sizes, reset: false });
+    this.setState({ sizes, rawSizes });
     this.initAlgorithms(chunks, sizes);
     return sizes;
-  };
+  }
+
+  setChunksAndSizes(rawChunks, rawSizes) {
+    const chunks = rawChunks.map((chunk) => {
+      return {
+        size: chunk,
+        free: chunk,
+        memory: new Array(chunk).fill(0),
+        accessing: false,
+      }
+    });
+    const sizes = rawSizes.map((size, idx) => {
+      return {
+        id: idx + 1,
+        size: size,
+        allocated: false,
+      }
+    });
+    this.setState({ chunks, rawChunks, sizes, rawSizes });
+    this.initAlgorithms(chunks, sizes);
+  }
 
   initAlgorithms(chunks, sizes) {
+    this.stopAutoAllocation();
     const structure = { chunks, sizes };
+    console.trace(structure);
     this.setState({
       firstFit: _.cloneDeep(structure),
       bestFit: _.cloneDeep(structure),
       worstFit: _.cloneDeep(structure),
-      buddysSystem: _.cloneDeep(structure),
       nextFit: _.cloneDeep(structure),
     })
+  }
+
+  startAutoAllocation() {
+    const auto = setInterval(() => {
+      this.doAlgorithmStep()
+    }, 1000);
+
+    this.setState({ auto })
+  }
+
+  stopAutoAllocation() {
+    clearInterval(this.state.auto);
+    this.setState({ auto: null });
   }
 
   doAlgorithmStep() {
@@ -248,7 +277,7 @@ export default class Visualization extends Component {
           return {
             ...state,
             chunkIdx: chunks[ chunkIdx + 1 ] ? chunkIdx + 1 : 0,
-            lastAlloc: chunks[ chunkIdx + 1 ] ? {...lastAlloc} : {...lastAlloc, loop: true},
+            lastAlloc: chunks[ chunkIdx + 1 ] ? { ...lastAlloc } : { ...lastAlloc, loop: true },
             chunks: newChunks,
             step: 'access'
           };
@@ -262,29 +291,20 @@ export default class Visualization extends Component {
   }
 
   render() {
-    const { firstFit, bestFit, worstFit, nextFit, reset } = this.state;
+    const { firstFit, bestFit, worstFit, nextFit, auto } = this.state;
 
     return (
-      <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         <ParameterInputs
           defaultChunks={this.defaultChunks}
           defaultSizes={this.defaultSizes}
-          setChunks={this.setChunks}
-          setSizes={this.setSizes}
-          reset={reset}
+          setChunks={this.setChunks.bind(this)}
+          setSizes={this.setSizes.bind(this)}
+          setChunksAndSizes={this.setChunksAndSizes.bind(this)}
+          startAutoAllocation={this.startAutoAllocation.bind(this)}
+          doAlgorithmStep={this.doAlgorithmStep.bind(this)}
+          auto={auto}
         />
-        <Button
-          onClick={() => {
-            this.doAlgorithmStep()
-          }}
-          style={{ marginLeft: '20px' }}
-        >DO STEP</Button>
-        <Button
-          onClick={() => {
-            this.reset()
-          }}
-          style={{ marginLeft: '20px' }}
-        >RESET</Button>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <Algorithm data={firstFit} name="First fit"/>
           <Algorithm data={bestFit} name="Best fit"/>
