@@ -199,6 +199,10 @@ export default class Visualization extends Component {
     }
   }
 
+  nextNextFitStep(state) {
+    
+  }
+
   render() {
     const { firstFit, bestFit, worstFit, buddysSystem, nextFit, reset } = this.state;
 
