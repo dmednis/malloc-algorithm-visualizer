@@ -5,22 +5,40 @@ import './ParameterInput.css';
 import { Button } from "reactstrap";
 
 export default class ParameterInputs extends Component {
+  static isNormalInteger(str) {
+    const n = Math.floor(Number(str));
+    return n !== Infinity && n > 0;
+  }
+
   constructor(props) {
     super();
     this.state = {
       chunks: props.defaultChunks || [],
       sizes: props.defaultSizes || [],
+      error: '',
     }
   }
 
+  toIntList(list, type) {
+    return list.reduce((list, element) => {
+      if (ParameterInputs.isNormalInteger(element)) {
+        this.setState({error: ''});
+        return list.concat(Number(element));
+      } else {
+        this.setState({error: type});
+        return list;
+      }
+    }, []);
+  }
+
   addChunks = (chunks) => {
-    const intChunks = chunks.map(c => Number(c));
+    const intChunks = this.toIntList(chunks, 'chunk');
     this.setState({ chunks: intChunks });
     this.props.setChunks(intChunks);
   };
 
   addSizes = (sizes) => {
-    const intSizes = sizes.map(s => Number(s));
+    const intSizes = this.toIntList(sizes, 'size');
     this.setState({ sizes: intSizes });
     this.props.setSizes(intSizes);
   };
@@ -39,7 +57,14 @@ export default class ParameterInputs extends Component {
 
   render() {
     const { auto } = this.props;
-    const { chunks, sizes } = this.state;
+    const { chunks, sizes, error } = this.state;
+    const chunkPlaceholder = error === 'chunk'
+      ? 'Enter a positive integer!'
+      : 'Enter chunks';
+    const sizePlaceholder = error === 'size'
+      ? 'Enter a positive integer!'
+      : 'Enter sizes';
+
     const style = {
       marginLeft: '20px',
       display: 'flex',
@@ -52,14 +77,14 @@ export default class ParameterInputs extends Component {
           value={chunks}
           onChange={this.addChunks}
           inputProps={{
-            placeholder: 'Enter chunks'
+            placeholder: chunkPlaceholder
           }}
         />
         <TagsInput
           value={sizes}
           onChange={this.addSizes}
           inputProps={{
-            placeholder: 'Enter sizes'
+            placeholder: sizePlaceholder
           }}
         />
         {!auto &&
