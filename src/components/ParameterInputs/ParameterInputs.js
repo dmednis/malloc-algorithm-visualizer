@@ -68,53 +68,57 @@ export default class ParameterInputs extends Component {
     const style = {
       marginLeft: '20px',
       display: 'flex',
-      flexDirection: 'row',
+      flexWrap: 'wrap',
     };
 
     return (
       <div style={style}>
-        <TagsInput
-          value={chunks}
-          onChange={this.addChunks}
-          inputProps={{
-            placeholder: chunkPlaceholder
-          }}
-        />
-        <TagsInput
-          value={sizes}
-          onChange={this.addSizes}
-          inputProps={{
-            placeholder: sizePlaceholder
-          }}
-        />
-        {!auto &&
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          <Button
-            onClick={() => {
-              this.props.startAutoAllocation()
+          <TagsInput
+            value={chunks}
+            onChange={this.addChunks}
+            inputProps={{
+              placeholder: chunkPlaceholder
             }}
-            style={{ marginLeft: '20px' }}
-          >AUTO ALLOCATE</Button>
-          <Button
-            onClick={() => {
-              this.props.doAlgorithmStep()
+          />
+          <TagsInput
+            value={sizes}
+            onChange={this.addSizes}
+            inputProps={{
+              placeholder: sizePlaceholder
             }}
-            style={{ marginLeft: '20px' }}
-          >STEP ALLOCATE</Button>
+          />
         </div>
-        }
-        <Button
-          onClick={() => {
-            this.reset()
-          }}
-          style={{ marginLeft: '20px' }}
-        >RESET</Button>
-        <Button
-          onClick={() => {
-            this.setToDefaults()
-          }}
-          style={{ marginLeft: '20px' }}
-        >SET TO DEFAULTS</Button>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {!auto &&
+          <div style={{ display: 'flex', flexWrap: 'no-wrap' }}>
+            <Button
+              onClick={() => {
+                this.props.startAutoAllocation()
+              }}
+              style={{ margin: '5px' }}
+            >AUTO ALLOCATE</Button>
+            <Button
+              onClick={() => {
+                this.props.doAlgorithmStep()
+              }}
+              style={{ margin: '5px' }}
+            >STEP ALLOCATE</Button>
+          </div>
+          }
+          <Button
+            onClick={() => {
+              this.reset()
+            }}
+            style={{ margin: '5px' }}
+          >RESET</Button>
+          <Button
+            onClick={() => {
+              this.setToDefaults()
+            }}
+            style={{ margin: '5px' }}
+          >SET TO DEFAULTS</Button>
+        </div>
       </div>
     )
   }
