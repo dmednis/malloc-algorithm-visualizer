@@ -88,6 +88,7 @@ export default class Visualization extends Component {
       bestFit: _.cloneDeep(structure),
       worstFit: _.cloneDeep(structure),
       nextFit: _.cloneDeep(structure),
+      drawGraph: false,
     })
   }
 
@@ -118,7 +119,8 @@ export default class Visualization extends Component {
       firstFit: newFirstFit,
       bestFit: newBestFit,
       worstFit: newWorstFit,
-      nextFit: newNextFit
+      nextFit: newNextFit,
+      drawGraph: true,
     });
   }
 
@@ -291,8 +293,7 @@ export default class Visualization extends Component {
   }
 
   render() {
-    const { firstFit, bestFit, worstFit, nextFit, auto } = this.state;
-
+    const { firstFit, bestFit, worstFit, nextFit, auto, drawGraph } = this.state;
     return (
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         <ParameterInputs
@@ -306,10 +307,10 @@ export default class Visualization extends Component {
           auto={auto}
         />
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          <Algorithm data={firstFit} name="First fit"/>
-          <Algorithm data={bestFit} name="Best fit"/>
-          <Algorithm data={worstFit} name="Worst fit"/>
-          <Algorithm data={nextFit} name="Next fit"/>
+          <Algorithm data={firstFit} drawGraph={drawGraph} name="First fit"/>
+          <Algorithm data={bestFit} drawGraph={drawGraph} name="Best fit"/>
+          <Algorithm data={worstFit} drawGraph={drawGraph} name="Worst fit"/>
+          <Algorithm data={nextFit} drawGraph={drawGraph} name="Next fit"/>
         </div>
       </div>
     )

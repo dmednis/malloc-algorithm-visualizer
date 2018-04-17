@@ -3,7 +3,7 @@ import MemoryIndicator from "../MemoryIndicator";
 import SegmentationGraph from "../SegmentationGraph";
 import { Col, Row } from "reactstrap";
 
-export default function Algorithm({ name, data }) {
+export default function Algorithm({ name, data, drawGraph }) {
 
   if (!data) {
     return null;
@@ -46,7 +46,7 @@ export default function Algorithm({ name, data }) {
           <MemoryIndicator chunks={chunks}/>
         </Col>
         <Col style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '50%', minWidth: 400 }}>
-          <SegmentationGraph chunks={chunks}/>
+          <SegmentationGraph chunks={chunks} drawGraph={drawGraph} done={done} />
         </Col>
       </Row>
     </div>
